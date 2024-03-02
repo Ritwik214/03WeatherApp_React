@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import apiKeys from "./apiKeys";
 import ReactAnimatedWeather from "react-animated-weather";
@@ -11,21 +11,21 @@ function Forecast(props) {
   const search = (city) => {
     axios
       .get(
-        `${apiKeys.base}weather?q=${
-          city !== "[object Object]" ? city : query
-        }&units=metric&APPID=${apiKeys.key}`
+        `${apiKeys.base}weather?q=${city}&units=metric&APPID=${apiKeys.key}`
       )
       .then((response) => {
         setWeather(response.data);
         setQuery("");
+        setError("");
       })
       .catch(function (error) {
         console.log(error);
-        setWeather("");
+        setWeather({});
         setQuery("");
-        setError({ message: "Not Found", query: query });
+        setError({ message: "Not Found", query: city });
       });
   };
+
   function checkTime(i) {
     if (i < 10) {
       i = "0" + i;
@@ -64,17 +64,15 @@ function Forecast(props) {
             value={query}
           />
           <div className="img-box">
-            {" "}
             <img
               src="https://images.avishkaar.cc/workflow/newhp/search-white.png"
-              onClick={search}
+              onClick={() => search(query)}
             />
           </div>
         </div>
         <ul>
-          {typeof weather.main != "undefined" ? (
+          {typeof weather.main !== "undefined" ? (
             <div>
-              {" "}
               <li className="cityHead">
                 <p>
                   {weather.name}, {weather.sys.country}
@@ -82,6 +80,7 @@ function Forecast(props) {
                 <img
                   className="temp"
                   src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
+                  alt="Weather Icon"
                 />
               </li>
               <li>
@@ -111,7 +110,7 @@ function Forecast(props) {
             </div>
           ) : (
             <li>
-              {error.query} {error.message}
+              {error.message} for {error.query}
             </li>
           )}
         </ul>
@@ -119,4 +118,5 @@ function Forecast(props) {
     </div>
   );
 }
+
 export default Forecast;
